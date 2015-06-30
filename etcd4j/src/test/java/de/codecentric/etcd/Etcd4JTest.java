@@ -39,9 +39,9 @@ public class Etcd4JTest {
 
   @Test
   public void testPutGetTemporaryKey() throws Exception {
-    assertEquals(value, client.put("temporary" + key, value).ttl(2).send().get().node.value);
+    assertEquals(value, client.put("temporary" + key, value).ttl(1).send().get().node.value);
     assertEquals(value, client.get("temporary" + key).send().get().node.value);
-    Thread.sleep(2000);
+    Thread.sleep(1500);
     try {
       client.get("temporary" + key).send().get();
     } catch(EtcdException e){
