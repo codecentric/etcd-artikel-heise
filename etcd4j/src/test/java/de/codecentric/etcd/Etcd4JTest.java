@@ -12,6 +12,7 @@ import java.util.UUID;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.fail;
 
 public class Etcd4JTest {
 
@@ -44,6 +45,7 @@ public class Etcd4JTest {
     Thread.sleep(1500);
     try {
       client.get("temporary" + key).send().get();
+      fail("Get on key temporary" + key + " should fail");
     } catch(EtcdException e){
       assertEquals(100, e.errorCode);
     }

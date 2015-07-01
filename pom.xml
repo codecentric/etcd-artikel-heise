@@ -12,14 +12,6 @@
   <modules>
     <module>etcd4j</module>
     <module>etcd-client</module>
+    <module>jetcd</module>
   </modules>
- 
-  <dependencies>
-    <!-- Etcd clients -->
-    <dependency>
-      <groupId>net.floatingsun</groupId>
-      <artifactId>jetcd</artifactId>
-      <version>0.3.1</version>
-    </dependency>
-  </dependencies>
 </project>
