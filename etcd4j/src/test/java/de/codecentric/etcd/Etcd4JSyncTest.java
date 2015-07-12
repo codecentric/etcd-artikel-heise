@@ -13,7 +13,7 @@ import java.util.UUID;
 import static org.assertj.core.api.StrictAssertions.assertThat;
 import static org.assertj.core.api.StrictAssertions.fail;
 
-public class Etcd4JTest {
+public class Etcd4JSyncTest {
 
     private EtcdClient client;
     private String key;
