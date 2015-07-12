@@ -10,6 +10,8 @@ import org.junit.Test;
 import java.net.URI;
 import java.util.Random;
 import java.util.UUID;
+import java.util.concurrent.CountDownLatch;
+import java.util.concurrent.TimeUnit;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -20,11 +22,15 @@ public class EtcdClientSyncTest {
 
     @Before
     public void setUp() throws Exception {
-        client = ClientBuilder.builder()
-                .hosts(URI.create("http://192.168.59.103:7001"))
-                .createClient();
+        client = createClient();
         key = String.valueOf(Math.abs(new Random().nextInt()));
         value = UUID.randomUUID().toString();
+    }
+
+    private Etcd createClient() {
+        return ClientBuilder.builder()
+                .hosts(URI.create("http://192.168.59.103:7001"))
+                .createClient();
     }
 
     @Test
@@ -51,5 +57,16 @@ public class EtcdClientSyncTest {
         assertThat(node.isDir()).isTrue();
         assertThat(node.getNodes()).hasSize(1);
         assertThat(node.getNodes().get(0).getValue()).isEqualTo(value);
+    }
+
+    @Test
+    public void testWaitForChange() throws Exception{
+        CountDownLatch cl = new CountDownLatch(1);
+        String compKey = "forever" + key;
+        assertThat(client.set(compKey, value).node().getValue()).isEqualTo(value);
+        client.wait(response -> cl.countDown(), compKey);
+        Thread.sleep(1000);
+        createClient().set(compKey, value + 1);
+        assertThat(cl.await(2000, TimeUnit.MILLISECONDS)).as("Timed out waiting for update").isTrue();
     }
 }

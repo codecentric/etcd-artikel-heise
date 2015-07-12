@@ -9,6 +9,8 @@ import org.junit.Test;
 import java.net.URI;
 import java.util.Random;
 import java.util.UUID;
+import java.util.concurrent.CountDownLatch;
+import java.util.concurrent.TimeUnit;
 
 import static org.assertj.core.api.StrictAssertions.assertThat;
 import static org.assertj.core.api.StrictAssertions.fail;
@@ -58,6 +60,17 @@ public class Etcd4JSyncTest {
         assertThat(node.dir).isTrue();
         assertThat(node.nodes.size()).isEqualTo(1);
         assertThat(node.nodes.get(0).value).isEqualTo(value);
+    }
+
+    @Test
+    public void testWaitForChange() throws Exception {
+        CountDownLatch cl = new CountDownLatch(1);
+        String compKey = "forever" + key;
+        assertThat(client.put(compKey, value).send().get().node.value).isEqualTo(value);
+        client.get(compKey).waitForChange().send().addListener(response -> cl.countDown());
+        Thread.sleep(2000);
+        client.put(compKey, value+1).send().get();
+        assertThat(cl.await(1000, TimeUnit.MILLISECONDS)).as("Timed out waiting for update").isTrue();
     }
 
 }
