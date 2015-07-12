@@ -12,6 +12,5 @@
   <modules>
     <module>etcd4j</module>
     <module>etcd-client</module>
-    <module>jetcd</module>
   </modules>
 </project>
